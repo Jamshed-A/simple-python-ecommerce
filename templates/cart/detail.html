@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping Cart - JAY DEE'S{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>Your Shopping Cart</h2>
+    </div>
+</div>
+
+{% if cart.items.all %}
+    <div class="row">
+        <div class="col-md-8">
+            {% for item in cart.items.all %}
+                <div class="cart-item">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" class="img-fluid" alt="{{ item.product.name }}" style="max-height: 100px;">
+                            {% else %}
+                                <div class="no-image-placeholder d-flex align-items-center justify-content-center" style="height: 100px; width: 100px; background-color: #e9ecef;">
+                                    <i class="fas fa-image text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-5">
+                            <h5>{{ item.product.name }}</h5>
+                            <p class="text-muted">${{ item.product.price }}</p>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group">
+                                <input type="number" class="form-control" value="{{ item.quantity }}" min="1"
+                                       onchange="updateQuantity({{ item.id }}, this.value)">
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <p class="mb-0"><strong>${{ item.get_cost }}</strong></p>
+                            <button class="btn btn-sm btn-outline-danger" onclick="removeItem({{ item.id }})">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>${{ cart.get_total_cost }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span>$5.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong>${{ cart.get_total_cost|add:5 }}</strong>
+                    </div>
+
+                    <a href="{% url 'orders:checkout' %}" class="btn btn-success w-100">
+                        Proceed to Checkout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="row">
+        <div class="col-12 text-center">
+            <h4>Your cart is empty</h4>
+            <p class="text-muted">Add some items to your cart to continue shopping</p>
+            <a href="{% url 'home' %}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
